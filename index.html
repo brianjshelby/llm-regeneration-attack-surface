@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Retry Button as a Safety Bypass — Brian Shelby</title>
+<meta name="description" content="Security research by Brian Shelby (CISSP, PMP): an observability gap in LLM chat interfaces, responsibly disclosed.">
+<style>
+  :root{
+    --bg:#F7F6F2; --ink:#1F2933; --muted:#5B6772; --line:#E3DFD3;
+    --card:#FFFFFF; --accent:#E8833A; --accent2:#2A4D69;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+    line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:860px;margin:0 auto;padding:0 22px}
+  a{color:var(--accent2);text-decoration:none}
+  a:hover{text-decoration:underline}
+
+  header.hero{background:var(--ink);color:#fff;padding:60px 0 52px}
+  .hero .kicker{color:var(--accent);font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;margin:0 0 14px}
+  .hero h1{margin:0 0 10px;font-size:32px;letter-spacing:-.3px;line-height:1.2}
+  .hero p.sub{color:#C7CDD3;font-size:17px;margin:0 0 18px}
+  .hero p.byline{color:#E6E8EA;margin:0}
+  .creds{display:inline-block;margin-top:18px;color:#AEB6BE;font-size:14px;
+    border-top:1px solid rgba(255,255,255,.15);padding-top:14px}
+
+  section{padding:44px 0;border-bottom:1px solid var(--line)}
+  h2{font-size:14px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 18px}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:26px 26px 22px;box-shadow:0 4px 18px rgba(0,0,0,.04)}
+  .card p{margin:0 0 18px}
+  .btns{display:flex;flex-wrap:wrap;gap:10px}
+  .btn{display:inline-block;font-size:14px;font-weight:600;border-radius:10px;
+    padding:9px 15px;border:1px solid var(--line);background:#fff;color:var(--ink)}
+  .btn.primary{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .btn.accent{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .btn:hover{text-decoration:none;filter:brightness(.97)}
+
+  ul.facts{list-style:none;padding:0;margin:0}
+  ul.facts li{padding:8px 0;border-bottom:1px solid var(--line);color:var(--muted);font-size:15px}
+  ul.facts li:last-child{border-bottom:none}
+  ul.facts b{color:var(--ink)}
+
+  .note{background:#fff;border:1px solid var(--line);border-left:3px solid var(--accent);
+    border-radius:10px;padding:16px 18px;color:var(--muted);font-size:15px}
+  footer{padding:32px 0 56px;color:var(--muted);font-size:14px}
+  footer a{color:var(--ink)}
+  @media(max-width:560px){.hero h1{font-size:25px}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="kicker">Security research · coordinated disclosure</p>
+    <h1>The Retry Button as a Safety Bypass:<br>An Observability Gap in LLM Chat Interfaces</h1>
+    <p class="sub">Context Window Trust Priming and Response Regeneration via "Retry" Branching</p>
+    <p class="byline">Brian Shelby · CISSP, PMP · Director, IT Infrastructure &amp; Cybersecurity</p>
+    <span class="creds">Defensive analysis · no operational exploit content</span>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <h2>The paper</h2>
+    <div class="card">
+      <p>
+        A security research paper on a compound technique against LLM chat interfaces: long-conversation
+        trust priming combined with stateless "retry" regeneration. The model evaluates each retry as if it
+        were the first, with no exposed memory of the attempts stacking up against it. The paper covers the
+        two mechanisms and four exploitation vectors, a seven-branch empirical test on Claude (plus a benign
+        reproduction on the current Opus 4.8 release), the observability and audit-trail gap that is its core
+        contribution, an OWASP LLM Top 10 mapping, its relationship to prior jailbreak research, and proposed
+        mitigations — alongside the coordinated-disclosure record.
+      </p>
+      <div class="btns">
+        <a class="btn primary" href="paper/LLM_Regeneration_Attack_Surface_Shelby_2026.pdf">Read the paper (PDF)</a>
+        <a class="btn accent" href="https://github.com/brianjshelby/llm-regeneration-attack-surface">View Repo</a>
+        <a class="btn" href="https://www.linkedin.com/pulse/ai-safety-has-delete-key-its-labeled-retry-brian-shelby-cissp-pmp-azyfc/">Plain-language write-up (LinkedIn)</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>At a glance</h2>
+    <ul class="facts">
+      <li><b>Finding:</b> regeneration + trust priming = repeatable safety-boundary bypass; the model is never shown the repeated attempts.</li>
+      <li><b>Contribution:</b> the observability / audit-trail gap in consumer chat UIs (the bypass mechanics themselves are established prior art).</li>
+      <li><b>Disclosure:</b> reported to the vendor 2026-03-11; 90-day coordinated window honored; published after no substantive response.</li>
+      <li><b>Reproduction:</b> benign protocol (a recipe, a nickname, five retries) — no boundary content required.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Responsible disclosure</h2>
+    <div class="note">
+      This work was reported to the affected vendor before publication and contains no working exploit
+      payloads or instructions for eliciting harmful model output. Reproduction steps use benign triggers
+      only. If you believe anything here crosses into operational harm, please reach out so it can be reviewed.
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    Brian Shelby, CISSP, PMP · <a href="https://www.linkedin.com/in/bshelby">linkedin.com/in/bshelby</a><br>
+    Documentation &amp; research text licensed CC BY 4.0.
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,16 @@
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+*.swp
+*~
+.idea/
+.vscode/
+
+# Office temp/lock files
+~$*.docx
+~$*.xlsx
+~$*.pptx
+
+# Local notes not meant for publication
+NOTES.local.md
+*.draft.md
